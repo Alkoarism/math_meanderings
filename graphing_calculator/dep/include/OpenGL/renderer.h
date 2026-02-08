@@ -9,7 +9,11 @@
 class Renderer {
 public:
 	static void Render
-	(const VertexArray&, const IndexBuffer&, const Shader&);
+	(const VertexArray&, const IndexBuffer&, const Shader&, const GLenum& mode = GL_TRIANGLES);
+	static void Render
+	(const VertexArray&, const Shader&, const int& firstPoint, const int& pointCnt,
+		const GLenum& mode = GL_LINES);
+
 	static void RenderConfig
 	(const float& r = 0.0f, const float& g = 0.0f,
 		const float& b = 0.0f, const float& a = 0.0f);

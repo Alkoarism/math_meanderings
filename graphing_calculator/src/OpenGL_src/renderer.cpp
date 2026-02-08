@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 
 void Renderer::Render
-	(const VertexArray& va, const IndexBuffer& ib, const Shader& s) {
+	(const VertexArray& va, const IndexBuffer& ib, const Shader& s, const GLenum& mode) {
 		va.Bind();
 		ib.Bind();
         s.Use();
@@ -14,7 +14,15 @@ void Renderer::Render
 		    s.SetUniform("model", model);
         }
 
-		glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(mode, ib.GetCount(), GL_UNSIGNED_INT, 0);
+	}
+
+void Renderer::Render
+	(const VertexArray& va, const Shader& s, const int& firstPoint, const int& pointCnt, const GLenum& mode){
+		va.Bind();
+		s.Use();
+
+		glDrawArrays(mode, firstPoint, pointCnt);
 	}
 
 void Renderer::RenderConfig

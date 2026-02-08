@@ -24,7 +24,7 @@ OBJDIR := obj
 BINDIR := bin
 
 # Executable name
-TARGET := core_consolidation_linux_build
+TARGET := graphing_calculator
 EXEC := $(BINDIR)/$(TARGET)
 
 # Source and object files

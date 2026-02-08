@@ -8,6 +8,8 @@
 #include "Modules/bitmap.h"
 #include "Modules/fontAtlas.h"
 
+#include "app_calculator/calculator.h"
+
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -137,7 +139,7 @@ int main() {
 	fontShader.SetUniform("model", fontModel);
 
 	//glEnable(GL_MULTISAMPLE); // Enabled by default
-	glLineWidth(3);
+	//glLineWidth(3);
 	//glEnable(GL_LINE_SMOOTH);
 
 	// render loop (happens every frame) -----------------------------------------
@@ -307,28 +309,40 @@ void RenderGraph(std::function<float(float)> func,
 
 	std::vector<float> coords;
 
-	glm::vec2 lastVec(0.0f, 0.0f);
+	glm::vec2 lastPoint(0.0f);
+	glm::vec2 lineScale(1.0f);
 	for (int i = 0; i < precision + 1; i++){
 		float x = xCnt * xStretch + offset;		// Screen coordinates adjust for x
 		float y = func(xCnt) * yStretch + (screenHeight - offset);	// Screen coordinates adjust for y
 		xCnt += xStep;
 		
-		coords.emplace_back(x);
-		coords.emplace_back(y);
+		//Calculates two vectors around a point and use it to equally stretch the line by a desired amout
+		glm::vec2 currentPoint(x,y);
+
+		glm::vec2 direction = currentPoint - lastPoint;
+		direction = glm::normalize(direction);
+		glm::mat2 trans(0,-lineScale.x,lineScale.y,0);
+
+		glm::vec2 higherDirection = direction * trans;
+		glm::vec2 lowerDirection = -direction * trans;
+
+		lastPoint = currentPoint;
+		coords.emplace_back(x + higherDirection.x);
+		coords.emplace_back(y + higherDirection.y);
+
+		coords.emplace_back(x + lowerDirection.x);
+		coords.emplace_back(y + lowerDirection.y);
 	}
 
 	// ------------ Slope ------------
 	VertexArray funcVA;
-	funcVA.Bind();
 	VertexBuffer funcVBO(coords.data(), sizeof(float) * coords.size(), GL_STATIC_DRAW);
 
 	VertexBufferLayout funcVBL;
 	funcVBL.Push<float>(2); // X and Y values for every point
 	funcVA.AddBuffer(funcVBO, funcVBL);
 
-	funcShader.Use();
-	//GL_LINES only selects pair of points, strip connects them
-	glDrawArrays(GL_LINE_STRIP, 0, coords.size()/2);
+	Renderer::Render(funcVA, funcShader, 0, coords.size()/2, GL_TRIANGLE_STRIP);
 
 	// ------------ Grid lines ------------
 	glm::vec3 gridColor(0.0f);
@@ -341,16 +355,13 @@ void RenderGraph(std::function<float(float)> func,
 	};
 
 	VertexArray gridVA;
-	gridVA.Bind();
 	VertexBuffer gridVBO(mainHorizontalGrid.data(), sizeof(float) * mainHorizontalGrid.size(), GL_STATIC_DRAW);
 
 	VertexBufferLayout gridVBL;
 	gridVBL.Push<float>(2); // X and Y values for every point
 	gridVA.AddBuffer(gridVBO, gridVBL);
 
-	funcShader.Use();
-	//GL_LINES only selects pair of points, strip connects them
-	glDrawArrays(GL_LINE_STRIP, 0, mainHorizontalGrid.size()/2);
+	Renderer::Render(gridVA, funcShader, 0, mainHorizontalGrid.size()/2, GL_LINE_STRIP);
 	// second grid
 
 	// third grid
