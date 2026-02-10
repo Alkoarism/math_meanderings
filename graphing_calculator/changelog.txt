@@ -1,0 +1,10 @@
+[2026-02-07 14:48:39]: First compilation test with new launch file
+[2026-02-07 14:49:35]: Second compilation test with new launch file (fist failed)
+[2026-02-07 14:53:02]: Small change to launch file
+[2026-02-07 15:08:51]: Removed CHGLOG_MESSAGE variable in launch.sh
+[2026-02-07 16:30:05]: Fixed irregular line size when rendering slopes
+[2026-02-08 12:52:15]: First Draft of calculator class
+[2026-02-08 13:57:50]: Added GLenum as a parameter on Renderer::Render(VA&, IB&, Shader&, mode&)
+[2026-02-08 14:10:20]: Added new render call overload for glDrawArrays
+[2026-02-08 14:12:55]: Delegated graph rendering function to the renderer
+[2026-02-08 14:25:55]: Included possibility to pass geometry shaders to a shader compiler
